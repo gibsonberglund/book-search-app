@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useMutation } from '@apollo/client';
 import { Form, Button, Alert } from 'react-bootstrap';
 
-import { createUser } from '../utils/API';
+import { ADD_USER } from '../utils/mutations';
 import Auth from '../utils/auth';
 
 const SignupForm = () => {
@@ -17,6 +18,8 @@ const SignupForm = () => {
     setUserFormData({ ...userFormData, [name]: value });
   };
 
+  const [addUser, { error }] = useMutation(ADD_USER);
+
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
@@ -28,26 +31,23 @@ const SignupForm = () => {
     }
 
     try {
-      const response = await createUser(userFormData);
+      const { data } = addUser({
+        variables: { ...userFormData },
+      });
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const { token, user } = await response.json();
-      console.log(user);
-      Auth.login(token);
+      window.location.reload();
     } catch (err) {
       console.error(err);
-      setShowAlert(true);
     }
-
-    setUserFormData({
-      username: '',
-      email: '',
-      password: '',
-    });
   };
+  setUserFormData({
+    username: '',
+    email: '',
+    password: '',
+  });
+
+
+
 
   return (
     <>
@@ -98,6 +98,7 @@ const SignupForm = () => {
         </Form.Group>
         <Button
           disabled={!(userFormData.username && userFormData.email && userFormData.password)}
+          onChange={handleFormSubmit}
           type='submit'
           variant='success'>
           Submit
@@ -105,6 +106,6 @@ const SignupForm = () => {
       </Form>
     </>
   );
-};
+  };
 
 export default SignupForm;
