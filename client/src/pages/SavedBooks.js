@@ -10,6 +10,7 @@ import {
 import { useMutation } from '@apollo/client';
 import { DELETE_BOOK } from '../utils/mutations';
 import { QUERY_SINGLE_USER } from '../utils/queries';
+import { useQuery } from '@apollo/client';
 
 import Auth from '../utils/auth';
 import { removeBookId } from '../utils/localStorage';
@@ -20,14 +21,10 @@ const SavedBooks = () => {
 
   const [deleteBook, { error }] = useMutation(DELETE_BOOK);
 
-  const { me } = cache.readQuery({ query: QUERY_SINGLE_USER });
-  cache.writeQuery({
-    query: QUERY_SINGLE_USER,
-    data: { me: { ...me, savedBooks: [...me.savedBooks, ADD_BOOK] } },
-  });
+  const {data} = useQuery(QUERY_SINGLE_USER);
 
   // use this to determine if `useEffect()` hook needs to run again
-  const userDataLength = Object.keys(userData).length;
+  //const userDataLength = Object.keys(userData).length;
 
   useEffect(() => {
     const getUserData = async () => {
@@ -38,11 +35,11 @@ const SavedBooks = () => {
           return false;
         }
 
-        if (!me.ok) {
+        if (!data.ok) {
           throw new Error('something went wrong!');
         }
 
-        const user = await me.json();
+        const user = await data.json();
         setUserData(user);
       } catch (err) {
         console.error(err);
@@ -50,7 +47,7 @@ const SavedBooks = () => {
     };
 
     getUserData();
-  }, [userDataLength]);
+  }, [data]);
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
@@ -77,7 +74,7 @@ const SavedBooks = () => {
   };
 
   // if data isn't here yet, say so
-  if (!userDataLength) {
+  if (!userData) {
     return <h2>LOADING...</h2>;
   }
 

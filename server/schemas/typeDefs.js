@@ -16,7 +16,7 @@ const typeDefs = gql`
     username: String
     email: String
     password: String
-    savedBooks: [Books]
+    savedBooks: [Book]
   }
 
   type Query {
