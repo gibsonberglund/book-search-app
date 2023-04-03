@@ -19,3 +19,12 @@ export const QUERY_SINGLE_USER = gql`
     }
   }
 `;
+
+export const QUERY_SAVED_BOOKS = gql`
+  query getSavedBookIds($userId: ID!) {
+    user(userId: $userId) {
+    _id
+    savedBooks
+    }
+  }
+`
