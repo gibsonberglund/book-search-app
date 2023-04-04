@@ -13,7 +13,6 @@ import { QUERY_SINGLE_USER } from '../utils/queries';
 import { useQuery } from '@apollo/client';
 
 import Auth from '../utils/auth';
-import { removeBookId } from '../utils/localStorage';
 import { ADD_BOOK } from '../utils/mutations';
 
 const SavedBooks = () => {
@@ -67,7 +66,7 @@ const SavedBooks = () => {
       const updatedUser = await deletedBook.json();
       setUserData(updatedUser);
       // upon success, remove book's id from localStorage
-      removeBookId(bookId);
+      deleteBook(bookId);
     } catch (err) {
       console.error(err);
     }
