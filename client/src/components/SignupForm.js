@@ -18,7 +18,7 @@ const SignupForm = () => {
     setUserFormData({ ...userFormData, [name]: value });
   };
 
-  const [addUser, { error }] = useMutation(ADD_USER);
+  const [addUser, { error, data }] = useMutation(ADD_USER);
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -31,9 +31,11 @@ const SignupForm = () => {
     }
 
     try {
-      const { data } = addUser({
+      const { data } = await addUser({
         variables: { ...userFormData },
       });
+
+      Auth.login(data.addUser.token);
 
       window.location.reload();
     } catch (err) {
